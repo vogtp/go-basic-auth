@@ -14,12 +14,6 @@ type Authenticator interface {
 	GinHandler() gin.HandlerFunc
 }
 
-// BasicAuth creates a new AD BasicAuth authenticator with sever and base DN
-// user must be in one of the authGroups to be successfully authenticated
-func BasicAuth(opts ...Option) Authenticator {
-	return New(opts...)
-}
-
 const (
 	cookieName    = "basicAuth"
 	cookieKeyAuth = "authenticated"
