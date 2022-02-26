@@ -10,7 +10,7 @@ Currently a LDAP backend and a simple in memory backend is provided.
 	allowMap["user"] = "password"
 	basicAuth := auth.New(
 		auth.WithInMemory(allowMap),                              // authorise users in allowMap (no groups used)
-		auth.WithAdLdap("SERVER_NAME", "BASE_DN", "DOMAIN_NAME"), // authorise users for (AD) LDAP
+		auth.WithLdap("SERVER_NAME", "BASE_DN", "DOMAIN_NAME"), // authorise users for (AD) LDAP
 		auth.WithGroup("group"),                                  // One or more groups the user has to be in to be authorised
 		auth.Debug(),                                             // enable debug output
 		auth.WithFailMsg("Use the email adress as user name"))    // custom error message

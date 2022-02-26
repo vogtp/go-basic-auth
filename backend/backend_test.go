@@ -87,7 +87,7 @@ func TestAdLdap(t *testing.T) {
 		{"creds[0:]: u0", creds[:0], creds[0], false},
 	}
 	testdomain := "testdomain"
-	adLdap := NewAdLdap("mockLdap", 0, "baseDN", testdomain)
+	adLdap := NewLdap("mockLdap", 0, "baseDN", testdomain)
 	adLdap.Authenticate("", "", nil)
 	for _, tc := range tests {
 		t.Run("ldap"+tc.name, func(t *testing.T) {

@@ -88,7 +88,7 @@ func TestBasicAuthHandler(t *testing.T) {
 	for _, c := range tc.userAllow {
 		allow[c.user] = c.pass
 	}
-	ba := New(WithInMemory(allow), WithGroup("grp"), WithFailMsg("test fail"), WithAdLdap("server", "db", "domain"))
+	ba := New(WithInMemory(allow), WithGroup("grp"), WithFailMsg("test fail"), WithLdap("server", "db", "domain"))
 	hanlderCalled := false
 	handler := http.HandlerFunc(ba.Handler(func(rw http.ResponseWriter, r *http.Request) { hanlderCalled = true }))
 

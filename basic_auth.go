@@ -37,9 +37,9 @@ func WithBackend(b Backender) Option {
 	}
 }
 
-// WithAdLdap is a convience function to add a LDAP server
-func WithAdLdap(server, baseDN, domainName string) Option {
-	return WithBackend(backend.NewAdLdap(server, 389, baseDN, domainName))
+// WithLdap is a convience function to add a LDAP server
+func WithLdap(server, baseDN, domainName string) Option {
+	return WithBackend(backend.NewLdap(server, 389, baseDN, domainName))
 }
 
 // WithInMemory is a convience function to add a in memory authentication
@@ -71,29 +71,29 @@ func Debug() Option {
 // New creates a new BasicAuth authenticator with sever and base DN
 // user must be in one of the authGroups to be successfully authenticated
 func New(opts ...Option) *Backend {
-	ba := &Backend{noAuthMsg: "Unauthorized"}
+	b := &Backend{noAuthMsg: "Unauthorized"}
 	for _, opt := range opts {
-		opt(ba)
+		opt(b)
 	}
-	if ba.authBackend == nil {
+	if b.authBackend == nil {
 		log.Fatal("No backend is given")
 	}
 
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
-	ba.cookieStore = sessions.NewCookieStore(generateKey(32))
-	return ba
+	b.cookieStore = sessions.NewCookieStore(generateKey(32))
+	return b
 }
 
-func (ba Backend) getAuth(_ http.ResponseWriter, r *http.Request) bool {
-	ba.debug("getting basic auth")
+func (b Backend) getAuth(_ http.ResponseWriter, r *http.Request) bool {
+	b.debug("getting basic auth")
 	upn, pw, ok := r.BasicAuth()
 	if !ok {
-		ba.debug("basic auth not OK: %s %v", upn, ok)
+		b.debug("basic auth not OK: %s %v", upn, ok)
 		return false
 	}
-	ba.debug("searching in backends")
-	for _, b := range ba.authBackend {
-		authOk, err := b.Authenticate(upn, pw, ba.authGroups)
+	b.debug("searching in backends")
+	for _, auth := range b.authBackend {
+		authOk, err := auth.Authenticate(upn, pw, b.authGroups)
 		if err != nil {
 			log.Printf("auth backend error: %v", err)
 		}
@@ -121,8 +121,8 @@ func generateKey(keyLen int) []byte {
 	return key
 }
 
-func (ba Backend) debug(format string, v ...interface{}) {
-	if !ba.dbg || !log.IsDebug() {
+func (b Backend) debug(format string, v ...interface{}) {
+	if !b.dbg || !log.IsDebug() {
 		return
 	}
 	log.Debugf("BasicAuth Debug: "+format, v...)

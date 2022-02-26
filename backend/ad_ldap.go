@@ -14,16 +14,16 @@ type ldap interface {
 	Authenticate(name string, password string, authGroups []string) (status bool, userGroups []string, err error)
 }
 
-// AdLdap is a backend to do LDAP authentication
-type AdLdap struct {
+// Ldap is a backend to do LDAP authentication
+type Ldap struct {
 	server     string
 	domainName string
 	ldap       ldap
 }
 
-// NewAdLdap returns a new ldap backend based on go-ad-auth/v3
-func NewAdLdap(server string, port int, baseDN string, domainName string) *AdLdap {
-	ldap := ldapImp{
+// NewLdap returns a new ldap backend based on go-ad-auth/v3
+func NewLdap(server string, port int, baseDN string, domainName string) *Ldap {
+	ldap := adLdap{
 		cfg: &ad.Config{
 			Server:   server,
 			Port:     port,
@@ -31,7 +31,7 @@ func NewAdLdap(server string, port int, baseDN string, domainName string) *AdLda
 			Security: ad.SecurityStartTLS,
 		},
 	}
-	return &AdLdap{
+	return &Ldap{
 		server:     server,
 		ldap:       ldap,
 		domainName: domainName,
@@ -39,7 +39,7 @@ func NewAdLdap(server string, port int, baseDN string, domainName string) *AdLda
 }
 
 // Authenticate does the authentication
-func (l AdLdap) Authenticate(upn string, password string, authGroups []string) (bool, error) {
+func (l Ldap) Authenticate(upn string, password string, authGroups []string) (bool, error) {
 	if !strings.Contains(upn, "@") && !strings.HasPrefix(upn, l.domainName) {
 		s := fmt.Sprintf("%s\\%s", l.domainName, upn)
 		log.Printf("prefixing user %s with %s -> %s", upn, l.domainName, s)
@@ -61,11 +61,11 @@ func (l AdLdap) Authenticate(upn string, password string, authGroups []string) (
 	return status, nil
 }
 
-type ldapImp struct {
+type adLdap struct {
 	cfg *ad.Config
 }
 
-func (l ldapImp) Authenticate(name string, password string, authGroups []string) (status bool, userGroups []string, err error) {
+func (l adLdap) Authenticate(name string, password string, authGroups []string) (status bool, userGroups []string, err error) {
 	status, _, groups, err := ad.AuthenticateExtended(l.cfg, name, password, []string{"SamAccountName"}, authGroups)
 	return status, groups, err
 }

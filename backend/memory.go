@@ -21,8 +21,8 @@ func NewInMemory(data map[string]string) *InMemory {
 }
 
 // Authenticate does the authentication
-func (b InMemory) Authenticate(user string, password string, _ []string) (bool, error) {
-	p, ok := b.authData[user]
+func (m InMemory) Authenticate(user string, password string, _ []string) (bool, error) {
+	p, ok := m.authData[user]
 	if !ok {
 		return false, fmt.Errorf("Wrong user %s or password", user)
 	}
