@@ -2,13 +2,13 @@ package backend
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	ad "github.com/korylprince/go-ad-auth/v3"
-	"github.com/vogtp/go-hcl"
 )
 
-var log = hcl.Named("basic-auth.ldap")
+// var log = hcl.Named("basic-auth.ldap")
 
 type ldap interface {
 	Authenticate(name string, password string, authGroups []string) (status bool, userGroups []string, err error)
