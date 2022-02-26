@@ -7,7 +7,7 @@ import (
 	auth "github.com/vogtp/go-basic-auth"
 )
 
-func ExampleLHandleFunc() {
+func ExampleHandleFunc() {
 	allowMap := make(map[string]string)
 	allowMap["user"] = "password"
 	basicAuth := auth.New(
