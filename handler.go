@@ -44,8 +44,8 @@ func (b Backend) Handler(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-// GinHandler is a handler func that does the authentification for GIN
-func (b Backend) GinHandler() gin.HandlerFunc {
+// Gin is a handler func that does the authentification for GIN
+func (b Backend) Gin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		b.debug("checking auth")
 		r := c.Request

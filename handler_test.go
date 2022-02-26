@@ -137,9 +137,9 @@ func TestGinHandler(t *testing.T) {
 			for _, c := range tc.userAllow {
 				allow[c.user] = c.pass
 			}
-			ba := New(WithInMemory(allow), Debug())
+			auth := New(WithInMemory(allow), Debug())
 			g := gin.Default()
-			g.Use(ba.GinHandler())
+			g.Use(auth.Gin())
 			hanlderCalled := false
 			g.GET("/", func(c *gin.Context) { hanlderCalled = true })
 

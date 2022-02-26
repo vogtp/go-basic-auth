@@ -20,5 +20,5 @@ func ExampleHandleFunc() {
 	http.HandleFunc("/", basicAuth.Handler(http.NotFound))
 	// or use as GIN middleware
 	gin := gin.Default()
-	gin.Use(basicAuth.GinHandler())
+	gin.Use(basicAuth.Gin())
 }
