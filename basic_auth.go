@@ -11,63 +11,65 @@ import (
 	"github.com/vogtp/go-basic-auth/backend"
 )
 
-// Defines what a backend must be able to do
-type AuthBackend interface {
+// Backender defines the interface to the auth backends
+type Backender interface {
 	Authenticate(user string, password string, authGroups []string) (bool, error)
 }
 
-// Basic HTTP Auth against a AuthBackend
-type basicAuth struct {
-	authBackend []AuthBackend
+// Backend provides basic HTTP Auth against a AuthBackend
+type Backend struct {
+	authBackend []Backender
 	authGroups  []string
 	cookieStore *sessions.CookieStore
 	noAuthMsg   string
 	dbg         bool
 }
 
-type Option func(*basicAuth)
+// Option is a func to configure basic auth
+type Option func(*Backend)
 
-//Ad a authBackend to Authentication
-func Backend(b AuthBackend) Option {
-	return func(auth *basicAuth) {
+// WithBackend sets a authentication backend
+func WithBackend(b Backender) Option {
+	return func(auth *Backend) {
 		auth.authBackend = append(auth.authBackend, b)
 	}
 }
 
-// Convience function to add a LDAP server
-func AdLdap(server, baseDN, domainName string) Option {
-	return Backend(backend.NewAdLdap(server, baseDN, domainName))
+// WithAdLdap is a convience function to add a LDAP server
+func WithAdLdap(server, baseDN, domainName string) Option {
+	return WithBackend(backend.NewAdLdap(server, 389, baseDN, domainName))
 }
 
-// Convience function to add a in memory authentication
-func Memory(data map[string]string) Option {
-	return Backend(backend.NewMemoryBackend(data))
+// WithInMemory is a convience function to add a in memory authentication
+func WithInMemory(data map[string]string) Option {
+	return WithBackend(backend.NewInMemory(data))
 }
 
-// Groups that authorised the user
-func AuthGroups(authGroups ...string) Option {
-	return func(auth *basicAuth) {
+// WithGroups sets groups that the user has to be in to be authorised
+func WithGroups(authGroups ...string) Option {
+	return func(auth *Backend) {
 		auth.authGroups = append(auth.authGroups, authGroups...)
 	}
 }
 
-// Custom message
-func NoAuthMsg(msg string) Option {
-	return func(auth *basicAuth) {
+// WithFailMsg sets a custom message on auth failure
+func WithFailMsg(msg string) Option {
+	return func(auth *Backend) {
 		auth.noAuthMsg = msg
 	}
 }
 
+// Debug forces for log output
 func Debug() Option {
-	return func(auth *basicAuth) {
+	return func(auth *Backend) {
 		auth.dbg = true
 	}
 }
 
-// creates a new BasicAuth authenticator with sever and base DN
+// New creates a new BasicAuth authenticator with sever and base DN
 // user must be in one of the authGroups to be successfully authenticated
-func New(opts ...Option) *basicAuth {
-	ba := &basicAuth{noAuthMsg: "Unauthorized"}
+func New(opts ...Option) *Backend {
+	ba := &Backend{noAuthMsg: "Unauthorized"}
 	for _, opt := range opts {
 		opt(ba)
 	}
@@ -80,7 +82,7 @@ func New(opts ...Option) *basicAuth {
 	return ba
 }
 
-func (ba basicAuth) getAuth(_ http.ResponseWriter, r *http.Request) bool {
+func (ba Backend) getAuth(_ http.ResponseWriter, r *http.Request) bool {
 	ba.debug("getting basic auth")
 	upn, pw, ok := r.BasicAuth()
 	if !ok {
@@ -117,7 +119,7 @@ func generateKey(keyLen int) []byte {
 	return key
 }
 
-func (ba basicAuth) debug(format string, v ...interface{}) {
+func (ba Backend) debug(format string, v ...interface{}) {
 	if !ba.dbg {
 		return
 	}

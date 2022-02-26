@@ -8,16 +8,18 @@ import (
 	ad "github.com/korylprince/go-ad-auth/v3"
 )
 
-type ldapBackend struct {
+// AdLdap is a backend to do LDAP authentication
+type AdLdap struct {
 	cfg        *ad.Config
 	domainName string
 }
 
-func NewAdLdap(server, baseDN, domainName string) *ldapBackend {
-	return &ldapBackend{
+// NewAdLdap returns a new ldap backend based on go-ad-auth/v3
+func NewAdLdap(server string, port int, baseDN string, domainName string) *AdLdap {
+	return &AdLdap{
 		cfg: &ad.Config{
 			Server:   server,
-			Port:     389,
+			Port:     port,
 			BaseDN:   baseDN,
 			Security: ad.SecurityStartTLS,
 		},
@@ -25,7 +27,8 @@ func NewAdLdap(server, baseDN, domainName string) *ldapBackend {
 	}
 }
 
-func (l ldapBackend) Authenticate(upn string, password string, authGroups []string) (bool, error) {
+// Authenticate does the authentication
+func (l AdLdap) Authenticate(upn string, password string, authGroups []string) (bool, error) {
 	if !strings.Contains(upn, "@") && !strings.HasPrefix(upn, l.domainName) {
 		s := fmt.Sprintf("%s\\%s", l.domainName, upn)
 		log.Printf("prefixing user %s with %s -> %s", upn, l.domainName, s)

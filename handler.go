@@ -1,3 +1,5 @@
+// Package auth provides authentication based on http basic auth
+// differen backend can be used
 package auth
 
 import (
@@ -6,12 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Authenticator provides handler funcs
 type Authenticator interface {
 	Handler(http.HandlerFunc) http.HandlerFunc
 	GinHandler() gin.HandlerFunc
 }
 
-// creates a new AD BasicAuth authenticator with sever and base DN
+// BasicAuth creates a new AD BasicAuth authenticator with sever and base DN
 // user must be in one of the authGroups to be successfully authenticated
 func BasicAuth(opts ...Option) Authenticator {
 	return New(opts...)
@@ -22,8 +25,8 @@ const (
 	cookieKeyAuth = "authenticated"
 )
 
-// handler func that does the authentification
-func (ba basicAuth) Handler(next http.HandlerFunc) http.HandlerFunc {
+// Handler is a handler func that does the authentification for stdlib http
+func (ba Backend) Handler(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ba.debug("checking auth")
 		session, err := ba.cookieStore.Get(r, cookieName)
@@ -47,7 +50,8 @@ func (ba basicAuth) Handler(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-func (ba basicAuth) GinHandler() gin.HandlerFunc {
+// GinHandler is a handler func that does the authentification for GIN
+func (ba Backend) GinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ba.debug("checking auth")
 		r := c.Request

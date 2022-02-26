@@ -2,20 +2,23 @@ package backend
 
 import "strings"
 
-// a memoryBackend uses user, password from a map and ignores groups
-type memoryBackend struct {
+// InMemory is a authentication backend
+// that uses a user password map
+// it does not use groups
+type InMemory struct {
 	authData map[string]string
 }
 
-// creates a new in memory backen
+// NewInMemory creates a new in memory backen
 // a memoryBackend uses user, password from a map and ignores groups
-func NewMemoryBackend(data map[string]string) *memoryBackend {
-	return &memoryBackend{
+func NewInMemory(data map[string]string) *InMemory {
+	return &InMemory{
 		authData: data,
 	}
 }
 
-func (b memoryBackend) Authenticate(user string, password string, _ []string) (bool, error) {
+// Authenticate does the authentication
+func (b InMemory) Authenticate(user string, password string, _ []string) (bool, error) {
 	p, ok := b.authData[user]
 	if !ok {
 		return false, nil
