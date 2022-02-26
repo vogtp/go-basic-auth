@@ -45,8 +45,8 @@ func WithInMemory(data map[string]string) Option {
 	return WithBackend(backend.NewInMemory(data))
 }
 
-// WithGroups sets groups that the user has to be in to be authorised
-func WithGroups(authGroups ...string) Option {
+// WithGroup sets groups that the user has to be in to be authorised
+func WithGroup(authGroups ...string) Option {
 	return func(auth *Backend) {
 		auth.authGroups = append(auth.authGroups, authGroups...)
 	}
@@ -74,7 +74,7 @@ func New(opts ...Option) *Backend {
 		opt(ba)
 	}
 	if ba.authBackend == nil {
-		log.Panic("No LDAP server is given")
+		log.Panic("No backend is given")
 	}
 
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
