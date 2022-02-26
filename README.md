@@ -6,6 +6,16 @@ A go module for simple HTTP basic auth.
 Currently a LDAP backend and a simple in memory backend is provided.
 
 ```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	auth "github.com/vogtp/go-basic-auth"
+)
+
+func main() {
 	allowMap := make(map[string]string)
 	allowMap["user"] = "password"
 	basicAuth := auth.New(
@@ -19,4 +29,6 @@ Currently a LDAP backend and a simple in memory backend is provided.
 	// or use as GIN middleware
 	gin := gin.Default()
 	gin.Use(basicAuth.Gin())
+}
+
 ```
