@@ -3,7 +3,7 @@
 
 A go module for simple HTTP basic auth.
 
-Currently a LDAP backend and a simple inmemory backend is provided.
+Currently a LDAP backend and a simple in memory backend is provided.
 
 ```go
 	allowMap := make(map[string]string)
