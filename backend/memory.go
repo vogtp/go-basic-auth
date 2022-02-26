@@ -1,6 +1,9 @@
 package backend
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // InMemory is a authentication backend
 // that uses a user password map
@@ -21,7 +24,10 @@ func NewInMemory(data map[string]string) *InMemory {
 func (b InMemory) Authenticate(user string, password string, _ []string) (bool, error) {
 	p, ok := b.authData[user]
 	if !ok {
-		return false, nil
+		return false, fmt.Errorf("Wrong user %s or password", user)
 	}
-	return strings.EqualFold(p, password), nil
+	if strings.EqualFold(p, password) {
+		return true, nil
+	}
+	return false, fmt.Errorf("Wrong user %s or password", user)
 }

@@ -11,7 +11,6 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/gorilla/sessions v1.2.1
 	github.com/korylprince/go-ad-auth/v3 v3.1.4
-	github.com/vjeantet/ldapserver v1.0.1
 )
 
 require (
@@ -25,7 +24,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lor00x/goldap v0.0.0-20180618054307-a546dffdd1a3 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
