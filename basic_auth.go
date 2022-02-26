@@ -4,14 +4,14 @@ import (
 	"crypto/rand"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/sessions"
 	"github.com/vogtp/go-basic-auth/backend"
+	"github.com/vogtp/go-hcl"
 )
 
-//var log = hcl.Named("basic-auth")
+var log = hcl.LibraryLogger("basic-auth")
 
 // Backender defines the interface to the auth backends
 type Backender interface {
@@ -122,8 +122,8 @@ func generateKey(keyLen int) []byte {
 }
 
 func (b Backend) debug(format string, v ...interface{}) {
-	if !b.dbg { // || !log.IsDebug() {
+	if !b.dbg || !log.IsDebug() {
 		return
 	}
-	log.Printf("BasicAuth Debug: "+format, v...)
+	log.Debugf(format, v...)
 }
