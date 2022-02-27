@@ -82,6 +82,7 @@ func TestAdLdap(t *testing.T) {
 		{"creds[3:]: u3", creds[3:], creds[3], true},
 		{"creds[3:]: u2", creds[3:], creds[2], false},
 		{"creds[2:]: u0", creds[2:], creds[0], false},
+		{"creds[2:]: u1", creds[2:], creds[1], false},
 		{"creds[1:]: u3", creds[1:], creds[3], true},
 		{"creds[]: u0NoPw", creds, u0NoPw, false},
 		{"creds[0:]: u0", creds[:0], creds[0], false},

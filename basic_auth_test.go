@@ -1,8 +1,13 @@
 package auth
 
 import (
+	"fmt"
+	"io/fs"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"reflect"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -158,4 +163,51 @@ func TestGinHandler(t *testing.T) {
 		})
 	}
 
+}
+
+func TestNewWithoutBackend(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+		t.Error("should have paniced")
+	}()
+	New()
+}
+
+func TestGenerateKey(t *testing.T) {
+	for klen := 2; klen < 1024; klen *= 2 {
+		name := fmt.Sprintf("Key length %d", klen)
+		t.Run(name, func(t *testing.T) {
+
+			k := generateKey(klen)
+			if len(k) != klen {
+				t.Errorf("Wrong key lenth %d wanted %d", len(k), klen)
+			}
+		})
+	}
+	testKey := []byte("someKey")
+	os.Remove(keyFile)
+	err := ioutil.WriteFile(keyFile, testKey, fs.ModeAppend)
+	if err != nil {
+		t.Fatalf("Cannot write %s: %v", keyFile, err)
+	}
+	defer func() { os.Remove(keyFile) }()
+	k := generateKey(len(keyFile))
+	if reflect.DeepEqual(k, testKey) {
+		t.Error("did not read the key from file")
+	}
+	k = generateKey(len(keyFile) * 2)
+	if reflect.DeepEqual(k, testKey) {
+		t.Error("this key should not have been used (wrong size)")
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+		t.Error("should have paniced")
+	}()
+	// this should panic
+	generateKey(1844674407370955161)
 }

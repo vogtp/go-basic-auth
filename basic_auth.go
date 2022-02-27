@@ -76,7 +76,7 @@ func New(opts ...Option) *Backend {
 		opt(b)
 	}
 	if b.authBackend == nil {
-		log.Fatal("No backend is given")
+		panic("No backend is given")
 	}
 
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
@@ -115,7 +115,8 @@ func generateKey(keyLen int) []byte {
 	key := make([]byte, keyLen)
 	_, err = rand.Read(key)
 	if err != nil {
-		log.Fatalf("cannot generate cookie key: %v", err)
+		log.Error("cannot generate cookie key: %v", err)
+		panic(err)
 	}
 	ioutil.WriteFile(keyFile, key, fs.ModeExclusive)
 	return key
